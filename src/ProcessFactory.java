@@ -7,8 +7,10 @@ import java.util.concurrent.TimeUnit;
 
 public class ProcessFactory implements Runnable {
 
-    private final List<Process> processesList = new LinkedList<>();
+    private final Utils utils = new Utils();
     private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+
+    public ProcessFactory() {}
 
     public void start() {
         scheduledExecutorService.scheduleAtFixedRate(this, 0, 30, TimeUnit.SECONDS);
@@ -19,11 +21,17 @@ public class ProcessFactory implements Runnable {
     }
 
     public void run() {
-        System.out.println("New process being created now...\n");
-        final Process process = new Process(getRandomizedId());
-        processesList.add(process);
-        System.out.println("Process created: " + processesList.get(processesList.size() - 1).getId() + "\n");
-        displayProcesses();
+        try {
+            System.out.println("#######################\n");
+            System.out.println("New process being created now...\n");
+            final Process process = new Process(getRandomizedId(), true);
+            Main.processesList.add(process);
+            System.out.println("Process created: " + Main.processesList.get(Main.processesList.size() - 1).getId() + "\n");
+            displayProcesses();
+            System.out.println("#######################\n");
+        } catch (final Exception exception) {
+            utils.defaultErrorCatch(exception);
+        }
     }
 
     private Integer getRandomizedId() {
@@ -33,7 +41,7 @@ public class ProcessFactory implements Runnable {
     private void displayProcesses() {
         final StringBuilder processesDisplayed = new StringBuilder("System current processes: ");
 
-        for (Process process : processesList) {
+        for (Process process : Main.processesList) {
             processesDisplayed.append(process.getId()).append(" / ");
         }
         System.out.println(processesDisplayed + "\n");
