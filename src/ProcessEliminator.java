@@ -1,3 +1,4 @@
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -28,8 +29,17 @@ public class ProcessEliminator implements Runnable {
     private void eliminateProcess() {
         System.out.println("#######################\n");
         System.out.println("Process being inactivated now...");
-        System.out.println("Process inactivated: " + Main.processesList.remove(Main.processesList.indexOf(utils.getProcessRandomly())).getId() + "\n");
+        final Process processToInactive  = utils.getProcessRandomly();
+        System.out.println("Process inactivated: " + Main.processesList.remove(Main.processesList.indexOf(processToInactive)).getId() + "\n");
+        validateCoordinatorProcess(processToInactive);
         System.out.println("#######################\n");
+    }
+
+    private void validateCoordinatorProcess(final Process processToInactive) {
+        if (Objects.equals(processToInactive.getId(), Main.processCoordinatorId)) {
+            Main.processCoordinatorId = null;
+            System.out.println("And it was the coordinator.");
+        }
     }
 
 }
