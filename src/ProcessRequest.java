@@ -10,15 +10,12 @@ public class ProcessRequest implements Runnable {
 
     private final Utils utils = new Utils();
     private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+    private Boolean isElectionRunning = false;
 
     public ProcessRequest() {}
 
     public void start() {
         scheduledExecutorService.scheduleAtFixedRate(this, 0, 25, TimeUnit.SECONDS);
-    }
-
-    public void stop() {
-        scheduledExecutorService.shutdown();
     }
 
     public void run() {
@@ -46,18 +43,29 @@ public class ProcessRequest implements Runnable {
 
     private void bullyElection(final Process processRequester) {
         final List<Integer> processesIdsThatResponded = new ArrayList<>();
-        sendRequests(processRequester, processesIdsThatResponded);
+        establishElection(processRequester, processesIdsThatResponded);
         selectCoordinator(processesIdsThatResponded);
+    }
+
+    private void establishElection(final Process processRequester, final List<Integer> processesIdsThatResponded) {
+        if (!getIsElectionRunning()) {
+            setIsElectionRunning(true);
+            sendRequests(processRequester, processesIdsThatResponded);
+        } else {
+            System.out.println("An election was trying to get in place, but it doesn't worked.");
+        }
     }
 
     private void sendRequests(final Process processRequester, final List<Integer> processesIdsThatResponded) {
         for (final Process process : Main.processesList) {
             if (!Objects.deepEquals(process, processRequester) && process.getId() > processRequester.getId()) {
-                System.out.println("Process " + processRequester.getId() + " calls process " + process.getId() + " for an election.");
+                System.out.println("Process " + processRequester.getId() + " calls process "
+                        + process.getId() + " for an election.");
                 System.out.println("Process " + process.getId() + " responds with OK.");
                 processesIdsThatResponded.add(process.getId());
             } else if (!Objects.deepEquals(process, processRequester) && process.getId() < processRequester.getId()) {
-                System.out.println("Process " + processRequester.getId() + " called process " + process.getId() + " for an election, but it has no responses.");
+                System.out.println("Process " + processRequester.getId() + " called process " + process.getId()
+                        + " for an election, but it has no responses.");
             } else if (Objects.deepEquals(process, processRequester)) {
                 System.out.println("Process " + processRequester.getId() + " called himself for an election.");
                 processesIdsThatResponded.add(processRequester.getId());
@@ -69,6 +77,15 @@ public class ProcessRequest implements Runnable {
         final Integer selectedProcessId = Collections.max(processesIdsThatResponded);
         Main.processCoordinatorId = selectedProcessId;
         System.out.println("Process " + selectedProcessId + " now is the coordinator.");
+        setIsElectionRunning(false);
+    }
+
+    private void setIsElectionRunning(final Boolean isElectionRunning) {
+        this.isElectionRunning = isElectionRunning;
+    }
+
+    private Boolean getIsElectionRunning() {
+        return isElectionRunning;
     }
 
 }

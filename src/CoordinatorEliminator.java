@@ -11,10 +11,6 @@ public class CoordinatorEliminator implements Runnable {
         scheduledExecutorService.scheduleAtFixedRate(this, 100, 100, TimeUnit.SECONDS);
     }
 
-    public void stop() {
-        scheduledExecutorService.shutdown();
-    }
-
     public void run() {
         try {
             if (Main.processCoordinatorId != null) {
@@ -28,7 +24,8 @@ public class CoordinatorEliminator implements Runnable {
     private void eliminateCoordinator() {
         System.out.println("#######################\n");
         System.out.println("Coordinator being inactivated now...");
-        System.out.println("Coordinator inactivated: " + Main.processesList.remove(Main.processesList.indexOf(getProcessCoordinator())).getId() + "\n");
+        System.out.println("Coordinator inactivated: " + Main.processesList
+                .remove(Main.processesList.indexOf(getProcessCoordinator())).getId() + "\n");
         Main.processCoordinatorId = null;
         System.out.println("#######################\n");
     }

@@ -14,10 +14,6 @@ public class ProcessEliminator implements Runnable {
         scheduledExecutorService.scheduleAtFixedRate(this, 80, 80, TimeUnit.SECONDS);
     }
 
-    public void stop() {
-        scheduledExecutorService.shutdown();
-    }
-
     public void run() {
         try {
             eliminateProcess();
@@ -30,7 +26,8 @@ public class ProcessEliminator implements Runnable {
         System.out.println("#######################\n");
         System.out.println("Process being inactivated now...");
         final Process processToInactive  = utils.getProcessRandomly();
-        System.out.println("Process inactivated: " + Main.processesList.remove(Main.processesList.indexOf(processToInactive)).getId() + "\n");
+        System.out.println("Process inactivated: " + Main.processesList
+                .remove(Main.processesList.indexOf(processToInactive)).getId() + "\n");
         validateCoordinatorProcess(processToInactive);
         System.out.println("#######################\n");
     }
@@ -38,7 +35,7 @@ public class ProcessEliminator implements Runnable {
     private void validateCoordinatorProcess(final Process processToInactive) {
         if (Objects.equals(processToInactive.getId(), Main.processCoordinatorId)) {
             Main.processCoordinatorId = null;
-            System.out.println("And it was the coordinator.");
+            System.out.println("And it was the coordinator.\n");
         }
     }
 

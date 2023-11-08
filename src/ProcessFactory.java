@@ -14,10 +14,6 @@ public class ProcessFactory implements Runnable {
         scheduledExecutorService.scheduleAtFixedRate(this, 0, 30, TimeUnit.SECONDS);
     }
 
-    public void stop() {
-        scheduledExecutorService.shutdown();
-    }
-
     public void run() {
         try {
             createProcess();
