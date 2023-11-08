@@ -1,4 +1,3 @@
-import java.security.SecureRandom;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -20,19 +19,17 @@ public class ProcessEliminator implements Runnable {
 
     public void run() {
         try {
-            System.out.println("#######################\n");
-            System.out.println("Process being inactivated now...\n");
-            final Process choosedProcess = getProcessRandomly();
-            choosedProcess.setIsSituationActive(false);
-            System.out.println("Process inactivated: " + choosedProcess.getId() + "\n");
-            System.out.println("#######################\n");
+            eliminateProcess();
         } catch (final Exception exception) {
             utils.defaultErrorCatch(exception);
         }
     }
 
-    private Process getProcessRandomly() {
-        return Main.processesList.get(new SecureRandom().nextInt(Main.processesList.size()));
+    private void eliminateProcess() {
+        System.out.println("#######################\n");
+        System.out.println("Process being inactivated now...");
+        System.out.println("Process inactivated: " + Main.processesList.remove(Main.processesList.indexOf(utils.getProcessRandomly())).getId() + "\n");
+        System.out.println("#######################\n");
     }
 
 }

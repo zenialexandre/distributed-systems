@@ -1,3 +1,5 @@
+import java.security.SecureRandom;
+
 public class Utils {
 
     public Utils() {}
@@ -6,6 +8,10 @@ public class Utils {
         System.out.println("#######################\n");
         System.out.println("ERROR: " + exception.getMessage());
         System.out.println("#######################\n");
+    }
+
+    protected Process getProcessRandomly() {
+        return Main.processesList.get(new SecureRandom().nextInt(Main.processesList.size()));
     }
 
 }

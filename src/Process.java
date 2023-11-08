@@ -1,11 +1,9 @@
 public class Process {
 
     private Integer id;
-    private boolean isSituationActive;
 
-    public Process(final Integer id, final boolean isSituationActive) {
+    public Process(final Integer id) {
         setId(id);
-        setIsSituationActive(isSituationActive);
     }
 
     protected void setId(final Integer id) {
@@ -14,14 +12,6 @@ public class Process {
 
     public Integer getId() {
         return id;
-    }
-
-    protected void setIsSituationActive(final boolean isSituationActive) {
-        this.isSituationActive = isSituationActive;
-    }
-
-    public boolean getIsSituationActive() {
-        return isSituationActive;
     }
 
 }

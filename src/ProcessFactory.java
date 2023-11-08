@@ -1,6 +1,4 @@
 import java.security.SecureRandom;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -22,16 +20,20 @@ public class ProcessFactory implements Runnable {
 
     public void run() {
         try {
-            System.out.println("#######################\n");
-            System.out.println("New process being created now...\n");
-            final Process process = new Process(getRandomizedId(), true);
-            Main.processesList.add(process);
-            System.out.println("Process created: " + Main.processesList.get(Main.processesList.size() - 1).getId() + "\n");
-            displayProcesses();
-            System.out.println("#######################\n");
+            createProcess();
         } catch (final Exception exception) {
             utils.defaultErrorCatch(exception);
         }
+    }
+
+    private void createProcess() {
+        System.out.println("#######################\n");
+        System.out.println("New process being created now...");
+        final Process process = new Process(getRandomizedId());
+        Main.processesList.add(process);
+        System.out.println("Process created: " + Main.processesList.get(Main.processesList.size() - 1).getId());
+        displayProcesses();
+        System.out.println("#######################\n");
     }
 
     private Integer getRandomizedId() {
@@ -41,7 +43,7 @@ public class ProcessFactory implements Runnable {
     private void displayProcesses() {
         final StringBuilder processesDisplayed = new StringBuilder("System current processes: ");
 
-        for (Process process : Main.processesList) {
+        for (final Process process : Main.processesList) {
             processesDisplayed.append(process.getId()).append(" / ");
         }
         System.out.println(processesDisplayed + "\n");
