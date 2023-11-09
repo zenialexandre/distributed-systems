@@ -33,8 +33,9 @@ public class ProcessEliminator implements Runnable {
     }
 
     private void validateCoordinatorProcess(final Process processToInactive) {
-        if (Objects.equals(processToInactive.getId(), Main.processCoordinatorId)) {
-            Main.processCoordinatorId = null;
+        if (Objects.equals(processToInactive.getId(), Main.coordinatorProcessId)) {
+            Main.coordinatorProcessId = null;
+            Main.processesWaitingQueue.clear();
             System.out.println("And it was the coordinator.\n");
         }
     }

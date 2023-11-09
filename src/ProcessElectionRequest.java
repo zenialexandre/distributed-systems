@@ -1,18 +1,18 @@
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.Objects;
+import java.util.Collections;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class ProcessRequest implements Runnable {
+public class ProcessElectionRequest implements Runnable {
 
     private final Utils utils = new Utils();
     private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
     private Boolean isElectionRunning = false;
 
-    public ProcessRequest() {}
+    public ProcessElectionRequest() {}
 
     public void start() {
         scheduledExecutorService.scheduleAtFixedRate(this, 0, 25, TimeUnit.SECONDS);
@@ -29,53 +29,53 @@ public class ProcessRequest implements Runnable {
     }
 
     private void executeRequest() {
-        final Process processRequester = utils.getProcessRandomly();
+        final Process requesterProcess = utils.getProcessRandomly();
 
-        if (Main.processCoordinatorId == null) {
+        if (Objects.nonNull(Main.coordinatorProcessId)) {
             System.out.println("#######################\n");
             System.out.println("An election has started...");
-            bullyElection(processRequester);
+            bullyElection(requesterProcess);
             System.out.println("Process that initialized the election: "
-                    + processRequester.getId() + " - Process that won: " + Main.processCoordinatorId + "\n");
+                    + requesterProcess.getId() + " - Process that won: " + Main.coordinatorProcessId + "\n");
             System.out.println("#######################\n");
         }
     }
 
-    private void bullyElection(final Process processRequester) {
-        final List<Integer> processesIdsThatResponded = new ArrayList<>();
-        establishElection(processRequester, processesIdsThatResponded);
+    private void bullyElection(final Process requesterProcess) {
+        final List<Integer> processesIdsThatResponded = new LinkedList<>();
+        establishElection(requesterProcess, processesIdsThatResponded);
         selectCoordinator(processesIdsThatResponded);
     }
 
-    private void establishElection(final Process processRequester, final List<Integer> processesIdsThatResponded) {
+    private void establishElection(final Process requesterProcess, final List<Integer> processesIdsThatResponded) {
         if (!getIsElectionRunning()) {
             setIsElectionRunning(true);
-            sendRequests(processRequester, processesIdsThatResponded);
+            sendRequests(requesterProcess, processesIdsThatResponded);
         } else {
             System.out.println("An election was trying to get in place, but it doesn't worked.");
         }
     }
 
-    private void sendRequests(final Process processRequester, final List<Integer> processesIdsThatResponded) {
+    private void sendRequests(final Process requesterProcess, final List<Integer> processesIdsThatResponded) {
         for (final Process process : Main.processesList) {
-            if (!Objects.deepEquals(process, processRequester) && process.getId() > processRequester.getId()) {
-                System.out.println("Process " + processRequester.getId() + " calls process "
+            if (!Objects.deepEquals(process, requesterProcess) && process.getId() > requesterProcess.getId()) {
+                System.out.println("Process " + requesterProcess.getId() + " calls process "
                         + process.getId() + " for an election.");
                 System.out.println("Process " + process.getId() + " responds with OK.");
                 processesIdsThatResponded.add(process.getId());
-            } else if (!Objects.deepEquals(process, processRequester) && process.getId() < processRequester.getId()) {
-                System.out.println("Process " + processRequester.getId() + " called process " + process.getId()
+            } else if (!Objects.deepEquals(process, requesterProcess) && process.getId() < requesterProcess.getId()) {
+                System.out.println("Process " + requesterProcess.getId() + " called process " + process.getId()
                         + " for an election, but it has no responses.");
-            } else if (Objects.deepEquals(process, processRequester)) {
-                System.out.println("Process " + processRequester.getId() + " called himself for an election.");
-                processesIdsThatResponded.add(processRequester.getId());
+            } else if (Objects.deepEquals(process, requesterProcess)) {
+                System.out.println("Process " + requesterProcess.getId() + " called himself for an election.");
+                processesIdsThatResponded.add(requesterProcess.getId());
             }
         }
     }
 
     private void selectCoordinator(final List<Integer> processesIdsThatResponded) {
         final Integer selectedProcessId = Collections.max(processesIdsThatResponded);
-        Main.processCoordinatorId = selectedProcessId;
+        Main.coordinatorProcessId = selectedProcessId;
         System.out.println("Process " + selectedProcessId + " now is the coordinator.");
         setIsElectionRunning(false);
     }

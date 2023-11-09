@@ -11,7 +11,7 @@ public class ProcessFactory implements Runnable {
     public ProcessFactory() {}
 
     public void start() {
-        scheduledExecutorService.scheduleAtFixedRate(this, 0, 30, TimeUnit.SECONDS);
+        scheduledExecutorService.scheduleAtFixedRate(this, 0, 40, TimeUnit.SECONDS);
     }
 
     public void run() {
