@@ -34,7 +34,8 @@ public class CoordinatorEliminator implements Runnable {
     }
 
     private Process getProcessCoordinator() {
-        return Main.processesList.stream().filter(element -> element.getId().equals(Main.coordinatorProcessId)).findFirst().orElse(null);
+        return Main.processesList.stream().filter(element
+                -> element.getId().equals(Main.coordinatorProcessId)).findFirst().orElse(null);
     }
 
 }

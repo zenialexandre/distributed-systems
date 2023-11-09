@@ -28,6 +28,7 @@ public class ProcessEliminator implements Runnable {
         final Process processToInactive  = utils.getProcessRandomly();
         System.out.println("Process inactivated: " + Main.processesList
                 .remove(Main.processesList.indexOf(processToInactive)).getId() + "\n");
+        Main.processesWaitingQueue.remove(processToInactive);
         validateCoordinatorProcess(processToInactive);
         System.out.println("#######################\n");
     }

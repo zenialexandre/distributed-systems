@@ -31,7 +31,7 @@ public class ProcessElectionRequest implements Runnable {
     private void executeRequest() {
         final Process requesterProcess = utils.getProcessRandomly();
 
-        if (Objects.nonNull(Main.coordinatorProcessId)) {
+        if (Objects.isNull(Main.coordinatorProcessId)) {
             System.out.println("#######################\n");
             System.out.println("An election has started...");
             bullyElection(requesterProcess);
