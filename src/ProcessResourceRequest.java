@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 public class ProcessResourceRequest implements Runnable {
 
     private final Utils utils = new Utils();
+    private final ProcessResourceConsumption processResourceConsumption =  new ProcessResourceConsumption();
     private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
     public void start() {
@@ -38,11 +39,25 @@ public class ProcessResourceRequest implements Runnable {
         if (Main.processesWaitingQueue.isEmpty()) {
             System.out.println("The queue for resource consumption is empty.");
             System.out.println("Process " + requesterProcess.getId() + " getting confirmation to allocate resource.");
-        } else {
+            //processResourceConsumption.consumeResource(requesterProcess);
+        } else if (!Main.processesWaitingQueue.contains(requesterProcess)) {
             System.out.println("The queue for resource consumption isn't empty.");
             System.out.println("The queue has " + Main.processesWaitingQueue.size() + " processes waiting.");
-            Main.processesWaitingQueue.add(requesterProcess);
+            Main.processesWaitingQueue.offer(requesterProcess);
             System.out.println("Process " + requesterProcess.getId() + " added to the queue.");
+        } else {
+            handleProcessAlreadyOnQueue(requesterProcess);
+        }
+    }
+
+    private void handleProcessAlreadyOnQueue(final Process requesterProcess) {
+        if (Objects.deepEquals(Main.processesWaitingQueue.getFirst(), requesterProcess)) {
+            System.out.println("Process now is the first of the queue.");
+            System.out.println("Process " + requesterProcess.getId() + " getting confirmation to allocate resource.");
+            //processResourceConsumption.consumeResource(requesterProcess);
+        } else {
+            System.out.println("Process isn't the first of the queue yet.");
+            System.out.println("Process " + requesterProcess.getId() + " need to wait for the other processes.");
         }
     }
 

@@ -1,3 +1,5 @@
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -5,7 +7,7 @@ public class Main {
 
     protected static Integer coordinatorProcessId;
     protected static List<Process> processesList = new LinkedList<>();
-    protected static List<Process> processesWaitingQueue = new LinkedList<>();
+    protected static Deque<Process> processesWaitingQueue = new ArrayDeque<>();
 
     public static void main(String[] args) {
         startSystem();
