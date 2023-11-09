@@ -1,4 +1,3 @@
-import java.security.SecureRandom;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -35,22 +34,29 @@ public class ProcessResourceRequest implements Runnable {
     }
 
     private void handleResourceRequest(final Process requesterProcess) {
-        if (Main.processesWaitingQueue.isEmpty()) {
+        if (Main.processesWaitingQueue.isEmpty() && !processResourceConsumption.getIsConsumptionTaskRunning()
+                && !Objects.deepEquals(requesterProcess, processResourceConsumption.getResourceConsumingProcess())) {
             System.out.println("The queue for resource consumption is empty.");
             System.out.println("Process " + requesterProcess.getId() + " getting confirmation to allocate resource.\n");
             processResourceConsumption.consumeResource(requesterProcess);
-        } else if (!Main.processesWaitingQueue.contains(requesterProcess)) {
-            System.out.println("The queue for resource consumption isn't empty.");
+        } else if (!Main.processesWaitingQueue.contains(requesterProcess)
+            && !Objects.deepEquals(requesterProcess, processResourceConsumption.getResourceConsumingProcess())) {
+            System.out.println("The queue for resource consumption isn't empty or some process is already consuming.");
             System.out.println("The queue has " + Main.processesWaitingQueue.size() + " processes waiting.\n");
             Main.processesWaitingQueue.offer(requesterProcess);
             System.out.println("Process " + requesterProcess.getId() + " added to the queue.\n");
+        } else if (!Main.processesWaitingQueue.contains(requesterProcess)
+            && Objects.deepEquals(requesterProcess, processResourceConsumption.getResourceConsumingProcess())) {
+            System.out.println("Process " + requesterProcess.getId() + " that made the request is already consuming the resource.\n");
         } else {
             handleProcessAlreadyOnQueue(requesterProcess);
         }
     }
 
     private void handleProcessAlreadyOnQueue(final Process requesterProcess) {
-        if (Objects.deepEquals(Main.processesWaitingQueue.getFirst(), requesterProcess)) {
+        if (Objects.deepEquals(Main.processesWaitingQueue.getFirst(), requesterProcess)
+                && !processResourceConsumption.getIsConsumptionTaskRunning()
+                && !Objects.deepEquals(requesterProcess, processResourceConsumption.getResourceConsumingProcess())) {
             System.out.println("Process now is the first of the queue.");
             System.out.println("Process " + requesterProcess.getId() + " getting confirmation to allocate resource.\n");
             processResourceConsumption.consumeResource(requesterProcess);

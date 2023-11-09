@@ -20,7 +20,7 @@ public class ProcessElectionRequest implements Runnable {
 
     public void run() {
         try {
-            if (!Main.processesList.isEmpty()) {
+            if (!Main.processesList.isEmpty() && !getIsElectionRunning()) {
                 executeRequest();
             }
         } catch (final Exception exception) {
@@ -48,12 +48,8 @@ public class ProcessElectionRequest implements Runnable {
     }
 
     private void establishElection(final Process requesterProcess, final List<Integer> processesIdsThatResponded) {
-        if (!getIsElectionRunning()) {
-            setIsElectionRunning(true);
-            sendRequests(requesterProcess, processesIdsThatResponded);
-        } else {
-            System.out.println("An election was trying to get in place, but it doesn't worked.");
-        }
+        setIsElectionRunning(true);
+        sendRequests(requesterProcess, processesIdsThatResponded);
     }
 
     private void sendRequests(final Process requesterProcess, final List<Integer> processesIdsThatResponded) {
